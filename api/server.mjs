@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-import taskRoutes from './routes/taskroutes.js';  // Adjusted import path
+import taskRoutes from '../routes/taskroutes.js';  // Adjusted import path
 
 dotenv.config();
 
