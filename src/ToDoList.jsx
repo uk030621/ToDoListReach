@@ -9,7 +9,7 @@ function ToDoList() {
 
 
     useEffect(() => {
-        fetch(API_BASE_URL_Vercel)
+        fetch(API_BASE_URL_Local)
             .then((response) => response.json())
             .then((data) => setTasks(data));
     }, []);
@@ -20,7 +20,7 @@ function ToDoList() {
 
     function addTask() {
         if (newTask.trim() !== "") {
-            fetch(API_BASE_URL_Vercel, {
+            fetch(API_BASE_URL_Local, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ text: newTask }),
@@ -34,7 +34,7 @@ function ToDoList() {
     }
 
     function deleteTask(id) {
-        fetch(`${API_BASE_URL_Vercel}/${id}`, {
+        fetch(`${API_BASE_URL_Local}/${id}`, {
             method: "DELETE",
         }).then(() => {
             setTasks((prevTasks) => prevTasks.filter((task) => task._id !== id));
@@ -42,7 +42,7 @@ function ToDoList() {
     }
 
     function moveTaskUp(id) {
-        fetch(`${API_BASE_URL_Vercel}/${id}/move-up`, {
+        fetch(`${API_BASE_URL_Local}/${id}/move-up`, {
             method: "PUT",
         }).then(() => {
             setTasks((prevTasks) => {
@@ -58,7 +58,7 @@ function ToDoList() {
     }
 
     function moveTaskDown(id) {
-        fetch(`${API_BASE_URL_Vercel}/${id}/move-down`, {
+        fetch(`${API_BASE_URL_Local}/${id}/move-down`, {
             method: "PUT",
         }).then(() => {
             setTasks((prevTasks) => {
