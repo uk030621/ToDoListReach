@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 
 const API_BASE_URL_Local = 'http://localhost:5000/tasks';
-const API_BASE_URL_Vercel = 'api/server/tasks';
+
 
 function ToDoList() {
     const [tasks, setTasks] = useState([]);
