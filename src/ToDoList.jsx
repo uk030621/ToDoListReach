@@ -1,17 +1,20 @@
+import axios from 'axios';
 import React, { useState, useEffect } from "react";
 
-const API_BASE_URL_Local = 'http://localhost:5000/tasks';
-
+// Define the API Base URL
+const API_BASE_URL = 
+  window.location.hostname === 'localhost'
+  ? 'http://localhost:5000/tasks'  // Development URL
+  : 'https://your-vercel-app.vercel.app/api/tasks';  // Production URL
 
 function ToDoList() {
     const [tasks, setTasks] = useState([]);
     const [newTask, setNewTask] = useState("");
 
-
     useEffect(() => {
-        fetch(API_BASE_URL_Local)
-            .then((response) => response.json())
-            .then((data) => setTasks(data));
+        axios.get(API_BASE_URL)
+            .then((response) => setTasks(response.data))
+            .catch((error) => console.error('Error fetching tasks:', error));
     }, []);
 
     function handleInputChange(event) {
@@ -20,57 +23,53 @@ function ToDoList() {
 
     function addTask() {
         if (newTask.trim() !== "") {
-            fetch(API_BASE_URL_Local, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ text: newTask }),
-            })
-                .then((response) => response.json())
-                .then((newTask) => {
-                    setTasks((prevTasks) => [...prevTasks, newTask]);
+            axios.post(API_BASE_URL, { text: newTask })
+                .then((response) => {
+                    setTasks((prevTasks) => [...prevTasks, response.data]);
                     setNewTask("");
-                });
+                })
+                .catch((error) => console.error('Error adding task:', error));
         }
     }
 
     function deleteTask(id) {
-        fetch(`${API_BASE_URL_Local}/${id}`, {
-            method: "DELETE",
-        }).then(() => {
-            setTasks((prevTasks) => prevTasks.filter((task) => task._id !== id));
-        });
+        axios.delete(`${API_BASE_URL}/${id}`)
+            .then(() => {
+                setTasks((prevTasks) => prevTasks.filter((task) => task._id !== id));
+            })
+            .catch((error) => console.error('Error deleting task:', error));
     }
 
     function moveTaskUp(id) {
-        fetch(`${API_BASE_URL_Local}/${id}/move-up`, {
-            method: "PUT",
-        }).then(() => {
-            setTasks((prevTasks) => {
-                const index = prevTasks.findIndex((task) => task._id === id);
-                if (index > 0) {
-                    const updatedTasks = [...prevTasks];
-                    [updatedTasks[index], updatedTasks[index - 1]] = [updatedTasks[index - 1], updatedTasks[index]];
-                    return updatedTasks;
-                }
-                return prevTasks;
-            });
-        });
+        axios.put(`${API_BASE_URL}/${id}/move-up`)
+            .then(() => {
+                setTasks((prevTasks) => {
+                    const index = prevTasks.findIndex((task) => task._id === id);
+                    if (index > 0) {
+                        const updatedTasks = [...prevTasks];
+                        [updatedTasks[index], updatedTasks[index - 1]] = [updatedTasks[index - 1], updatedTasks[index]];
+                        return updatedTasks;
+                    }
+                    return prevTasks;
+                });
+            })
+            .catch((error) => console.error('Error moving task up:', error));
     }
 
     function moveTaskDown(id) {
-        fetch(`${API_BASE_URL_Local}/${id}/move-down`, {
-            method: "PUT",
-        }).then(() => {
-            setTasks((prevTasks) => {
-                const index = prevTasks.findIndex((task) => task._id === id);
-                if (index < prevTasks.length - 1) {
-                    const updatedTasks = [...prevTasks];
-                    [updatedTasks[index], updatedTasks[index + 1]] = [updatedTasks[index + 1], updatedTasks[index]];
-                    return updatedTasks;
-                }
-                return prevTasks;
-            });
-        });
+        axios.put(`${API_BASE_URL}/${id}/move-down`)
+            .then(() => {
+                setTasks((prevTasks) => {
+                    const index = prevTasks.findIndex((task) => task._id === id);
+                    if (index < prevTasks.length - 1) {
+                        const updatedTasks = [...prevTasks];
+                        [updatedTasks[index], updatedTasks[index + 1]] = [updatedTasks[index + 1], updatedTasks[index]];
+                        return updatedTasks;
+                    }
+                    return prevTasks;
+                });
+            })
+            .catch((error) => console.error('Error moving task down:', error));
     }
 
     return (
